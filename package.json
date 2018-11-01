@@ -1,0 +1,20 @@
+{
+  "name": "cli",
+  "version": "0.0.1",
+  "description": "Poetri CLI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https:/www.github.com/PoetriIsCode/CLI"
+  },
+  "keywords": [
+    "poetri",
+    "cli",
+    "serverless"
+  ],
+  "author": "Pablo Andrés Dorado Suárez <pabloandres@poetri.co>",
+  "license": "MIT"
+}
