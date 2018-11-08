@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Poetri CLI",
   "main": "index.js",
+  "bin": {
+    "poetri": "bin/poetri.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,5 +19,12 @@
     "serverless"
   ],
   "author": "Pablo Andrés Dorado Suárez <pabloandres@poetri.co>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "inquirer": "^6.2.0",
+    "owasp-password-strength-test": "^1.3.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  }
 }
