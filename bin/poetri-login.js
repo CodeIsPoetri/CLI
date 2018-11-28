@@ -8,7 +8,7 @@ const Validators = require('../lib/validators');
 const AuthAPI = require('../lib/auth.api');
 
 program
-    .description('Registers a new user on Poetri.')
+    .description('Signs a Poetri user in.')
     .option('-m --email <email>', 'mail for the user')
     .action(main)
     .parse(process.argv);
