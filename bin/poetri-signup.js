@@ -5,14 +5,20 @@
 const program = require('commander');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
+const AuthAPI = require('../lib/auth.api');
+
+const { stat: statAsync, readFile: readFileAsync } = require('fs');
+const EsPromisify = require('es-promisify');
+const stat = EsPromisify(statAsync);
+const readFile = EsPromisify(readFileAsync);
 
 program
     .description('Registers a new user on Poetri.')
-    .option('-m --mail <mail>', 'mail for the user')
+    .option('-m --email <email>', 'mail for the user')
     .action(main)
     .parse(process.argv);
 
-async function main ({ mail }) {
+async function main ({ email }) {
     const questions = [
         {
             name: 'username',
@@ -34,7 +40,7 @@ async function main ({ mail }) {
         {
             name: 'mail',
             message: 'Enter your mail',
-            default: mail,
+            default: email,
             validate: Validators.mail
         },
         {
@@ -44,6 +50,23 @@ async function main ({ mail }) {
             validate: Validators.password
         },
         {
+            name: 'sshKeyFile',
+            message: 'Enter your public SSH key',
+            default: '~/.ssh/id_rsa.pub',
+            async validate (filename) {
+                filename = filename.replace('~', process.env.HOME);
+                try {
+                    const stats = await stat(filename);
+                    return stats.isFile();
+                } catch (error) {
+                    return `Please use a valid file. There was an error: ${error.message}`;
+                }
+            },
+            filter (filename) {
+                return filename.replace('~', process.env.HOME);
+            }
+        },
+        {
             name: 'terms',
             message: 'Do you agree the terms of service\n(available at https://poetri.co/terms)?',
             type: 'confirm',
@@ -51,9 +74,17 @@ async function main ({ mail }) {
         }
     ];
 
-    const answers = await inquirer.prompt(questions);
+    const {
+        username,
+        firstName,
+        lastName,
+        mail,
+        password,
+        sshKeyFile,
+        terms
+    } = await inquirer.prompt(questions);
 
-    if (!answers.terms) {
+    if (!terms) {
         console.log([
             `\nYou need to agree to the terms of service in order to`,
             `register in our platform. Please fill up the form again`,
@@ -61,5 +92,20 @@ async function main ({ mail }) {
         ].join(' '));
 
         process.exit(1);
+    }
+
+    const sshPublicKey = (await readFile(sshKeyFile)).toString();
+
+    try {
+        await AuthAPI.register({
+            username,
+            firstName,
+            lastName,
+            mail,
+            password,
+            sshPublicKey
+        });
+    } catch (error) {
+        console.error('There was an error trying to signup. Please try again later:', error.message);
     }
 }
