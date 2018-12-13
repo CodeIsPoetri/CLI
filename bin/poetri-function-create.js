@@ -10,6 +10,7 @@ const Validators = require('../lib/validators');
 const Project = require('../lib/project');
 const Templates = require('../lib/templates');
 const Token = require('../lib/token');
+const { Functon: API } = require('../lib/api');
 
 const { resolve } = require('path');
 const { cwd } = process;
@@ -94,6 +95,7 @@ async function main (path, options) {
                 'deploying your functions to the platform.'
             ].join(' '));
         } else {
+            API.insert(project, { slug, ...project.functions[slug] });
         }
     } catch (error) {
         console.error(error.message);
