@@ -7,7 +7,7 @@
     "poetri": "bin/poetri.js"
   },
   "scripts": {
-    "test": "mocha --exit test/*"
+    "test": "mocha --exit --timeout 10000 test/*"
   },
   "repository": {
     "type": "git",
