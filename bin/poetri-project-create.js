@@ -58,7 +58,7 @@ async function main (path, options) {
         const project = await Project.initialize(
             new Project(resolve(cwd(), slug), { slug, name, description }));
 
-        if (Token.get() === undefined || Token.get() === null) {
+        if (!Token.isLoggedIn()) {
             console.log(chalk`{rgb(140,255,130) ${ascii()}}`);
             console.log([
                 `Just don't forget to signup and sync before deploying.`,
