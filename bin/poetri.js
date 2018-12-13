@@ -9,7 +9,11 @@ const { version } = require('../package');
 
 program
     .version(version)
-    .command('signup', 'registers an user')
-    .command('login', 'logs-in an user')
+    .command('signup', 'register yourself')
+    .command('login', 'log-in into Poetri network')
+    .command('logout', 'log-out of Poetri network')
     .command('init', 'creates a new project')
+    .command('project', 'manage your projects')
+    .command('function', 'manage your functions')
+    .command('user', 'manage your user info')
     .parse(process.argv);
