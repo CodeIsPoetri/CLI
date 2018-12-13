@@ -65,9 +65,9 @@ async function main (path, options) {
                 `To do this, try 'poetri sync' or 'poetri project sync'.`
             ].join('\n'));
         } else {
-            const { project: { id } = {}, status } = await API.insert(project);
+            const { project: { id } = {}, state } = await API.insert(project);
 
-            if (Number(status)) {
+            if (Number(state)) {
                 project.id = id;
                 await Project.write(project);
             } else {
