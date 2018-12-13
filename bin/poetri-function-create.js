@@ -95,7 +95,19 @@ async function main (path, options) {
                 'deploying your functions to the platform.'
             ].join(' '));
         } else {
-            API.insert(project, { slug, ...project.functions[slug] });
+            const { status } = await API.insert(project, {
+                slug,
+                ...project.functions[slug]
+            });
+
+            if (Number(status)) {
+                await Project.write(project);
+            } else {
+                console.log([
+                    'There was an error trying to register your function in the platform.',
+                    'Please contact support to support@poetri.co or Twitter @Poetri_co.'
+                ].join(' '));
+            }
         }
     } catch (error) {
         console.error(error.message);
