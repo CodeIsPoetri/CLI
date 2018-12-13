@@ -1,6 +1,6 @@
 'use strict';
 
-const AuthApi = require('../lib/auth.api');
+const { Auth: API } = require('../lib/api');
 const Token = require('../lib/token');
 
 describe('Auth', () => {
