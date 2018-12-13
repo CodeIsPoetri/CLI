@@ -65,9 +65,17 @@ async function main (path, options) {
                 `To do this, try 'poetri sync' or 'poetri project sync'.`
             ].join('\n'));
         } else {
-            const { project: { id } } = await API.insert(project);
-            project.id = id;
-            await Project.write(project);
+            const { project: { id } = {}, status } = await API.insert(project);
+
+            if (Number(status)) {
+                project.id = id;
+                await Project.write(project);
+            } else {
+                console.log([
+                    'There was an error trying to register your project in the platform.',
+                    'Please contact support to support@poetri.co or Twitter @Poetri_co.'
+                ].join(' '));
+            }
         }
     } catch (error) {
         console.error(error.message);

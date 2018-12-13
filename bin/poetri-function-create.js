@@ -20,6 +20,7 @@ program
     .description('Creates a new function.')
     .option('-l --language <language>', 'The language to use in the project')
     .option('-n --name <name>', 'The function name')
+    .option('-v --version <version>', 'The function version', '1.0.0')
     .option('-n --description <description>', 'The function description', undefined)
     .action(main)
     .parse(process.argv);
@@ -35,7 +36,8 @@ async function main (path, options) {
         slug: slugOption =
             path || slugGenerate().dashed,
         name: nameOption,
-        description: descriptionOption
+        description: descriptionOption,
+        version: versionOption
     } = options;
 
     const languageList =
@@ -68,6 +70,16 @@ async function main (path, options) {
             validate: Validators.required
         },
         {
+            name: 'version',
+            message: 'Enter the function version',
+            ...typeof versionOption === 'function'
+                ? versionOption() !== undefined
+                    ? { default: versionOption() }
+                    : { }
+                : { default: versionOption },
+            validate: Validators.required
+        },
+        {
             name: 'description',
             message: 'Enter the function description (optional)',
             ...typeof descriptionOption === 'function'
@@ -80,10 +92,10 @@ async function main (path, options) {
 
     try {
         const project = await Project.read(cwd());
-        const { language, slug, name, description } =
+        const { language, slug, name, version, description } =
             await inquirer.prompt(questions);
 
-        project.functions[slug] = { language, name, description };
+        project.functions[slug] = { language, name, description, version };
         await Templates.copy(language, resolve(project.directory, slug));
         await Project.write(project);
 
@@ -95,7 +107,19 @@ async function main (path, options) {
                 'deploying your functions to the platform.'
             ].join(' '));
         } else {
-            API.insert(project, { slug, ...project.functions[slug] });
+            const { status } = await API.insert(project, {
+                slug,
+                ...project.functions[slug]
+            });
+
+            if (Number(status)) {
+                await Project.write(project);
+            } else {
+                console.log([
+                    'There was an error trying to register your function in the platform.',
+                    'Please contact support to support@poetri.co or Twitter @Poetri_co.'
+                ].join(' '));
+            }
         }
     } catch (error) {
         console.error(error.message);
