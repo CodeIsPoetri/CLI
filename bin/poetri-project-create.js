@@ -7,7 +7,7 @@ const slugGenerate = require('project-name-generator');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
 
-const { Project: API } = require('../lib/api');
+const { Auth, Project: API } = require('../lib/api');
 const Project = require('../lib/project');
 const Token = require('../lib/token');
 
@@ -55,7 +55,7 @@ async function main (path, options) {
     const { slug, name, description } = await inquirer.prompt(questions);
 
     try {
-        await Project.initialize(
+        const project = await Project.initialize(
             new Project(resolve(cwd(), slug), { slug, name, description }));
 
         if (Token.get() === undefined || Token.get() === null) {
@@ -65,7 +65,13 @@ async function main (path, options) {
                 `To do this, try 'poetri sync' or 'poetri project sync'.`
             ].join('\n'));
         } else {
+            const { project: { id } } = await API.insert(project);
+            project.id = id;
+            await Project.write(project);
 
+            // TODO: Remove after this is present on API
+            const { username: owner } = await Auth.me();
+            await Auth.message('project:afterInsert', { slug, owner });
         }
     } catch (error) {
         console.error(error.message);

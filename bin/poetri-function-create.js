@@ -7,10 +7,11 @@ const slugGenerate = require('project-name-generator');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
 
-const Templates = require('../lib/templates');
 const Project = require('../lib/project');
-const { Function: API } = require('../lib/api');
+const Templates = require('../lib/templates');
+const Token = require('../lib/token');
 
+const { resolve } = require('path');
 const { cwd } = process;
 
 program
@@ -80,6 +81,20 @@ async function main (path, options) {
         const project = await Project.read(cwd());
         const { language, slug, name, description } =
             await inquirer.prompt(questions);
+
+        project.functions[slug] = { language, name, description };
+        await Templates.copy(language, resolve(project.directory, slug));
+        await Project.write(project);
+
+        if (Token.get() === undefined || Token.get() === null) {
+            console.log([
+                `Your function ${slug} was successfully created.`
+                `However, you haven't logged-in on Poetri.`,
+                `You'll probably need to log in and run 'poetri sync' before`,
+                'deploying your functions to the platform.'
+            ].join(' '));
+        } else {
+        }
     } catch (error) {
         console.error(error.message);
     }

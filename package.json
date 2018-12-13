@@ -1,6 +1,6 @@
 {
   "name": "@poetri/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Poetri CLI",
   "main": "lib/api.js",
   "bin": {
@@ -25,6 +25,7 @@
     "chai-as-promised": "^7.1.1",
     "commander": "^2.19.0",
     "es-promisify": "^1.1.2",
+    "extract-zip": "^1.6.7",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.0",
     "mv": "^2.1.1",
@@ -39,7 +40,6 @@
     "supertest": "^3.3.0",
     "supertest-as-promised": "^4.0.2",
     "tmp": "0.0.33",
-    "unzip": "^0.1.11",
     "yaml": "^1.0.3"
   },
   "devDependencies": {
