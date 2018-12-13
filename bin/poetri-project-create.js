@@ -7,7 +7,7 @@ const slugGenerate = require('project-name-generator');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
 
-const { Auth, Project: API } = require('../lib/api');
+const { Project: API } = require('../lib/api');
 const Project = require('../lib/project');
 const Token = require('../lib/token');
 
@@ -68,10 +68,6 @@ async function main (path, options) {
             const { project: { id } } = await API.insert(project);
             project.id = id;
             await Project.write(project);
-
-            // TODO: Remove after this is present on API
-            const { username: owner } = await Auth.me();
-            await Auth.message('project:afterInsert', { slug, owner });
         }
     } catch (error) {
         console.error(error.message);

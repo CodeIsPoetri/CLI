@@ -10,7 +10,7 @@ const Validators = require('../lib/validators');
 const Project = require('../lib/project');
 const Templates = require('../lib/templates');
 const Token = require('../lib/token');
-const { Functon: API } = require('../lib/api');
+const { Function: API } = require('../lib/api');
 
 const { resolve } = require('path');
 const { cwd } = process;
