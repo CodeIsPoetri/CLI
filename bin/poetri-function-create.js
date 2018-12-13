@@ -87,7 +87,7 @@ async function main (path, options) {
         await Templates.copy(language, resolve(project.directory, slug));
         await Project.write(project);
 
-        if (Token.get() === undefined || Token.get() === null) {
+        if (!Token.isLoggedIn()) {
             console.log([
                 `Your function ${slug} was successfully created.`
                 `However, you haven't logged-in on Poetri.`,
