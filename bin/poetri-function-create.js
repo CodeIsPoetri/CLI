@@ -107,12 +107,12 @@ async function main (path, options) {
                 'deploying your functions to the platform.'
             ].join(' '));
         } else {
-            const { status } = await API.insert(project, {
+            const { state } = await API.insert(project, {
                 slug,
                 ...project.functions[slug]
             });
 
-            if (Number(status)) {
+            if (Number(state)) {
                 await Project.write(project);
             } else {
                 console.log([
