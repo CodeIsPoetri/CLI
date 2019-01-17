@@ -33,6 +33,7 @@ async function main ({ email }) {
 
     try {
         await Auth.login(mail, password);
+        console.log('Logged in! Start hacking! ;)');
     } catch (error) {
         console.error('There was an error trying to signup. Please try again later:', error.message);
     }
