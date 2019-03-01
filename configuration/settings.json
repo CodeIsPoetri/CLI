@@ -9,6 +9,16 @@
             "clientSecret": "3PgLlf15EIGFE8BwMrFPxVHf5PytOUJxpuq3HJVzzUs="
         }
     },
+    "staging": {
+        "api": {
+            "endpoint": "https://staging-api.poetri.co"
+        },
+        "authApi": {
+            "endpoint": "https://staging-auth.poetri.co",
+            "clientId": "d6aed24f-939c-473d-84bb-40235ebb2f86",
+            "clientSecret": "3PgLlf15EIGFE8BwMrFPxVHf5PytOUJxpuq3HJVzzUs="
+        }
+    },
     "test": {
         "api": {
             "endpoint": "https://private-d83bd1-poetri.apiary-mock.com/category"
