@@ -3,7 +3,6 @@
 'use strict';
 
 const program = require('commander');
-const slugGenerate = require('project-name-generator');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
 
@@ -15,17 +14,19 @@ const { Function: API } = require('../lib/api');
 const { resolve } = require('path');
 const { cwd } = process;
 
-program
-    .usage('[options] <path>')
-    .description('Creates a new function.')
-    .option('-l --language <language>', 'The language to use in the project')
-    .option('-n --name <name>', 'The function name')
-    .option('-v --version <version>', 'The function version', '1.0.0')
-    .option('-n --description <description>', 'The function description', undefined)
-    .action(main)
-    .parse(process.argv);
+if (require.main === module) {
+    program
+        .usage('[options] <path>')
+        .description('Creates a new function.')
+        .option('-l --language <language>', 'The language to use in the project')
+        .option('-n --name <name>', 'The function name')
+        .option('-v --version <version>', 'The function version', '1.0.0')
+        .option('-n --description <description>', 'The function description', undefined)
+        .action(main)
+        .parse(process.argv);
+}
 
-async function main (path, options) {
+async function main (path, options = {}) {
     if (typeof path !== 'string') {
         options = path;
         path = undefined;
@@ -33,8 +34,6 @@ async function main (path, options) {
 
     const {
         language: languageOption = '',
-        slug: slugOption =
-            path || slugGenerate().dashed,
         name: nameOption,
         description: descriptionOption,
         version: versionOption
@@ -45,21 +44,6 @@ async function main (path, options) {
 
     const questions = [
         {
-            name: 'language',
-            type: 'list',
-            message: 'Select the language to use',
-            default: languageList.findIndex(language => language === languageOption) !== -1
-                ? languageList.findIndex(language => language === languageOption)
-                : 0,
-            choices: languageList
-        },
-        {
-            name: 'slug',
-            message: 'Enter an identifier for your function',
-            default: slugOption,
-            validate: Validators.slug
-        },
-        {
             name: 'name',
             message: 'Enter the function name',
             ...typeof nameOption === 'function'
@@ -68,6 +52,28 @@ async function main (path, options) {
                     : { }
                 : { default: nameOption },
             validate: Validators.required
+        },
+        {
+            name: 'slug',
+            message: 'Enter an identifier for your function',
+            default: ({ name }) => path || name
+                .toLowerCase()
+                .split(' ')
+                .join('-'),
+            filter: slug => slug
+                .toLowerCase()
+                .split(' ')
+                .join('-'),
+            validate: Validators.slug
+        },
+        {
+            name: 'language',
+            type: 'list',
+            message: 'Select the language to use',
+            default: languageList.findIndex(language => language === languageOption) !== -1
+                ? languageList.findIndex(language => language === languageOption)
+                : 0,
+            choices: languageList
         },
         {
             name: 'version',
@@ -124,5 +130,6 @@ async function main (path, options) {
     } catch (error) {
         console.error(error.message);
     }
-
 }
+
+module.exports = main;

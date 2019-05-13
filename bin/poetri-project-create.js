@@ -3,7 +3,6 @@
 'use strict';
 
 const program = require('commander');
-const slugGenerate = require('project-name-generator');
 const inquirer = require('inquirer');
 const Validators = require('../lib/validators');
 
@@ -17,34 +16,37 @@ const { cwd } = process;
 const chalk = require('chalk');
 const ascii = require('../lib/ascii');
 
-program
-    .usage('[options] <path>')
-    .description('Creates a new project.')
-    .option('-s --slug')
-    .action(main)
-    .parse(process.argv);
+if (require.main === module) {
+    program
+        .usage('[options] <path>')
+        .description('Creates a new project.')
+        .action(main)
+        .parse(process.argv);
+}
 
-async function main (path, options) {
+async function main (path) {
     if (typeof path !== 'string') {
-        options = path;
         path = undefined;
     }
 
-    const {
-        slug: defaultSlug =
-            path || slugGenerate({ number: true, words: 4 }).dashed
-    } = options;
     const questions = [
+        {
+            name: 'name',
+            message: `Enter the project's display name`,
+            validate: Validators.required
+        },
         {
             name: 'slug',
             message: 'Enter an identifier for your project',
-            default: defaultSlug,
+            default: ({ name }) => path || name
+                .toLowerCase()
+                .split(' ')
+                .join('-'),
+            filter: slug => slug
+                .toLowerCase()
+                .split(' ')
+                .join('-'),
             validate: Validators.slug
-        },
-        {
-            name: 'name',
-            message: 'Enter the project name',
-            validate: Validators.required
         },
         {
             name: 'description',
@@ -55,6 +57,10 @@ async function main (path, options) {
     const { slug, name, description } = await inquirer.prompt(questions);
 
     try {
+        if (path === undefined) {
+            path = slug;
+        }
+
         const project = await Project.initialize(
             new Project(resolve(cwd(), slug), { slug, name, description }));
 
@@ -77,7 +83,11 @@ async function main (path, options) {
                 ].join(' '));
             }
         }
+
+        return path;
     } catch (error) {
         console.error(error.message);
     }
 }
+
+module.exports = main;
