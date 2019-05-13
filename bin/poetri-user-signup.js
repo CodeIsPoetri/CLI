@@ -73,7 +73,7 @@ async function main ({ email }) {
             name: 'terms',
             message: 'Do you agree the terms of service\n(available at https://poetri.co/terms)?',
             type: 'confirm',
-            default: false
+            default: true
         }
     ];
 
